@@ -3,7 +3,7 @@
 Extraction of Diode SPICE C-V Parameters
 <div align="center">
     <img src="images/th1.png" alt="Threshold Voltage and Inversion charge">  
-      <p><strong>Fig. 1. Threshold Voltage and Inversion charge</strong></p>
+      <p><strong>Fig. 1. Graphical Extraction of Diode SPICE I-V Parameters</strong></p>
 </div>
 
 The capacitance of a p-n junction is not constant; it varies with the applied voltage. The total capacitance ($C_J$) modeled in SPICE is the sum of two distinct physical components:
