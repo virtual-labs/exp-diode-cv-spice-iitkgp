@@ -1,39 +1,116 @@
-{
-  "version": 2.0,
+  {
+	  "version": 2.0,
   "questions": [
-    {
-      "question": "This is a Sample Question 1?",
-      "answers": {
-        "a": "answer1",
-        "b": "answer2",
-        "c": "answer3",
-        "d": "answer4"
-      },
-      "explanations": {
-        "a": "Explanation 1  <a href='www.google.com'>here</a>",
-        "b": "Explanation 2",
-        "c": "Explanation 2",
-        "d": "Explanation 2"
-      },
-      "correctAnswer": "a",
-      "difficulty": "beginner"
+      {
+    "question": "1. What SPICE parameter is the primary model component for the stored minority charge in forward bias, which in turn determines the diffusion capacitance?",
+    "answers": {
+      "a": "$CJO$",
+      "b": "$TT$ (Transit Time)",
+      "c": "$VJ$ (Junction Potential)",
+      "d": "$M$ (Grading Coefficient)"
     },
-    {
-      "question": "This is a Sample Question 2?",
-      "answers": {
-        "a": "answer1",
-        "b": "answer2",
-        "c": "answer3",
-        "d": "answer4"
-      },
-      "explanations": {
-        "a": "Explanation 1  <a href='www.google.com'>here</a>",
-        "b": "Explanation 2",
-        "c": "Explanation 2",
-        "d": "Explanation 2"
-      },
-      "correctAnswer": "c",
-      "difficulty": "beginner"
-    }
+    "correctAnswer": "b",
+    "difficulty": "beginner"
+  },
+  {
+    "question": "2. The SPICE equation for depletion capacitance ($C_D$) under reverse bias ($V_R$) is given by:",
+    "answers": {
+      "a": "$C_D = CJO / (1 + V_R / VJ)^M$",
+      "b": "$C_D = CJO \cdot (1 + V_R / VJ)^M$",
+      "c": "$C_D = CJO \cdot e^{V_R / (M \cdot VJ)}$",
+      "d": "$C_D = TT \cdot (I_D / V_T)$"
+    },
+    "correctAnswer": "a",
+    "difficulty": "beginner"
+  },
+  {
+    "question": "3. For a linearly graded p-n junction, what value is the grading coefficient 'M' typically set to?",
+    "answers": {
+      "a": "0.5",
+      "b": "1.0",
+      "c": "0.33",
+      "d": "2.0"
+    },
+    "correctAnswer": "c",
+    "difficulty": "intermediate"
+  },
+  {
+    "question": "4. The diffusion capacitance ($C_{diff}$) in forward bias is modeled as being directly proportional to which two quantities?",
+    "answers": {
+      "a": "Junction potential ($VJ$) and Transit time ($TT$)",
+      "b": "Zero-bias capacitance ($CJO$) and Forward current ($I_D$)",
+      "c": "Forward current ($I_D$) and Transit time ($TT$)",
+      "d": "Grading coefficient ($M$) and Junction potential ($VJ$)"
+    },
+    "correctAnswer": "c",
+    "difficulty": "intermediate"
+  },
+  {
+    "question": "5. If a diode has a linearly graded junction ($M=0.33$), which plot would yield a straight line against the reverse voltage $V_R$, allowing for extraction of $VJ$?",
+    "answers": {
+      "a": "$log(C_J)$ vs. $V_R$",
+      "b": "$1/C_J^2$ vs. $V_R$",
+      "c": "$1/C_J^3$ vs. $V_R$",
+      "d": "$C_J$ vs. $V_R$"
+    },
+    "correctAnswer": "c",
+    "difficulty": "advanced"
+  },
+  {
+    "question": "6. In the $1/C_J^2$ vs. $V_R$ plot for an abrupt junction, the slope of the linear region is inversely proportional to what physical parameter?",
+    "answers": {
+      "a": "The junction area",
+      "b": "The built-in potential ($VJ$)",
+      "c": "The effective doping concentration",
+      "d": "The transit time ($TT$)"
+    },
+    "correctAnswer": "c",
+    "difficulty": "advanced"
+  },
+  {
+    "question": "7. What is the primary purpose of the SPICE parameter 'FC' (Forward-bias depletion capacitance coefficient)?",
+    "answers": {
+      "a": "It models the frequency dependence of the capacitance.",
+      "b": "It provides a linear approximation for depletion capacitance under forward bias to prevent the model equation from becoming singular.",
+      "c": "It sets the transit time $TT$ value.",
+      "d": "It models the capacitance in reverse breakdown."
+    },
+    "correctAnswer": "b",
+    "difficulty": "intermediate"
+  },
+  {
+    "question": "8. The transit time $TT$ is typically extracted by measuring the diode's capacitance under which condition?",
+    "answers": {
+      "a": "At zero bias ($V_D = 0$).",
+      "b": "Under strong reverse bias.",
+      "c": "Under strong forward bias, where $C_{diff}$ dominates.",
+      "d": "During avalanche breakdown."
+    },
+    "correctAnswer": "c",
+    "difficulty": "intermediate"
+  },
+  {
+    "question": "9. Under what bias condition does the depletion capacitance ($C_D$) almost exclusively determine the total junction capacitance ($C_J$)?",
+    "answers": {
+      "a": "Strong forward bias",
+      "b": "Zero bias",
+      "c": "Reverse bias",
+      "d": "At $V_D = VJ$"
+    },
+    "correctAnswer": "c",
+loc_name: "beginner"
+  },
+  {
+    "question": "10. What is the most direct way to measure the parameter $CJO$?",
+    "answers": {
+      "a": "Measure the total capacitance $C_J$ at $V_D = 0$ V, typically at a fixed high frequency (e.g., 1 MHz).",
+      "b": "Measure the slope of the $C_J$ vs. $I_D$ curve in forward bias.",
+      "c": "Calculate it from the forward I-V curve's ideality factor.",
+      "d": "Extrapolate the $1/C_J^3$ vs. $V_R$ plot to $V_R = 0$."
+    },
+    "correctAnswer": "a",
+    "difficulty": "intermediate"
+  }
+
   ]
 }
