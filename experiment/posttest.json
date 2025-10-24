@@ -2,115 +2,116 @@
   {
 	  "version": 2.0,
   "questions": [
-    {
-      "question": "1. What does the Gummel plot method characterize in a BJT?",
-      "answers": {
-        "a": "Voltage gain",
-        "b": "Current gain",
-        "c": "Power gain",
-        "d": "Frequency gain"
-      },
-      "correctAnswer": "b",
-      "difficulty": "beginner"
+     {
+    "question": "1. The total junction capacitance ($C_J$) in a diode is modeled as the sum of which two components?",
+    "answers": {
+      "a": "Ohmic capacitance and Series capacitance",
+      "b": "Depletion capacitance and Diffusion capacitance",
+      "c": "Parasitic capacitance and Package capacitance",
+      "d": "Barrier capacitance and Transit capacitance"
     },
-    {
-      "question": "2. The Gummel plot is used to analyze the relationship between which of the following parameters?",
-      "answers": {
-        "a": "Base-emitter voltage (V_BE) and collector current (I_C)",
-        "b": "Base current (I_B) and collector current (I_C)",
-        "c": "Emitter current (I_E) and base current (I_B)",
-        "d": "Base-emitter voltage (V_BE) and base current (I_B)"
-      },
-      "correctAnswer": "b",
-      "difficulty": "beginner"
+    "correctAnswer": "b",
+    "difficulty": "beginner"
+  },
+  {
+    "question": "2. Which SPICE parameter represents the junction capacitance at zero applied bias ($V_D = 0$)?",
+    "answers": {
+      "a": "$M$ (Grading Coefficient)",
+      "b": "$TT$ (Transit Time)",
+      "c": "$CJO$ (Zero-Bias Junction Capacitance)",
+      "d": "$VJ$ (Junction Potential)"
     },
-    {
-      "question": "3. What is typically plotted on the y-axis in a Gummel plot?",
-      "answers": {
-        "a": "Base current (I_B)",
-        "b": "Collector current (I_C)",
-        "c": "Base-emitter voltage (V_BE)",
-        "d": "Saturation current (I_S)"
-      },
-      "correctAnswer": "b",
-      "difficulty": "beginner"
+    "correctAnswer": "c",
+    "difficulty": "beginner"
+  },
+  {
+    "question": "3. The SPICE parameter 'M' (Grading Coefficient) describes how the depletion capacitance varies with voltage. What is the typical value of 'M' for an abrupt (step) junction?",
+    "answers": {
+      "a": "0.33",
+      "b": "0.5",
+      "c": "1.0",
+      "d": "2.0"
     },
-    {
-      "question": "4. In the Gummel plot, the relationship between collector current (I_C) and base-emitter voltage (V_BE) shows what type of relationship?",
-      "answers": {
-        "a": "Exponential",
-        "b": "Linear",
-        "c": "Quadratic",
-        "d": "Logarithmic"
-      },
-      "correctAnswer": "a",
-      "difficulty": "intermediate"
+    "correctAnswer": "b",
+    "difficulty": "intermediate"
+  },
+  {
+    "question": "4. What does the SPICE parameter 'VJ' (also known as $PB$) represent in the C-V model?",
+    "answers": {
+      "a": "The reverse breakdown voltage.",
+      "b": "The forward voltage drop at 1A.",
+      "c": "The built-in potential (contact potential) of the junction.",
+      "d": "The voltage at which $C_J = CJO$."
     },
-    {
-      "question": "5. What does the slope of the collector current (I_C) versus base-emitter voltage (V_BE) plot represent?",
-      "answers": {
-        "a": "Saturation current (I_S)",
-        "b": "Current gain (\u03b2)",
-        "c": "Emitter efficiency",
-        "d": "Thermal voltage (V_T)"
-      },
-      "correctAnswer": "a",
-      "difficulty": "intermediate"
+    "correctAnswer": "c",
+    "difficulty": "intermediate"
+  },
+  {
+    "question": "5. For an ideal abrupt p-n junction under reverse bias, which plot is linear and commonly used to extract junction parameters?",
+    "answers": {
+      "a": "$C_J$ vs. $V_R$",
+      "b": "$log(C_J)$ vs. $V_R$",
+      "c": "$1/C_J^2$ vs. $V_R$",
+      "d": "$1/C_J$ vs. $V_R$"
     },
-    {
-      "question": "6. How does the Gummel plot help in BJT characterization?",
-      "answers": {
-        "a": "By measuring thermal resistance",
-        "b": "By extracting parameters like saturation current and current gain",
-        "c": "By measuring power dissipation",
-        "d": "By analyzing frequency response"
-      },
-      "correctAnswer": "b",
-      "difficulty": "intermediate"
+    "correctAnswer": "c",
+    "difficulty": "intermediate"
+  },
+  {
+    "question": "6. When plotting $1/C_J^2$ vs. $V_R$ for an abrupt junction, what does the voltage-axis (x-axis) intercept ideally represent?",
+    "answers": {
+      "a": "The zero-bias capacitance, $CJO$.",
+      "b": "The built-in potential, $VJ$.",
+      "c": "The grading coefficient, $M$.",
+      "d": "The series resistance, $RS$."
     },
-    {
-      "question": "7. What parameter of a BJT is directly related to the ideality factor in the Gummel plot?",
-      "answers": {
-        "a": "Saturation current (I_S)",
-        "b": "Base-emitter voltage (V_BE)",
-        "c": "Emitter efficiency",
-        "d": "Thermal voltage (V_T)"
-      },
-      "correctAnswer": "a",
-      "difficulty": "advanced"
+    "correctAnswer": "b",
+    "difficulty": "advanced"
+  },
+  {
+    "question": "7. From the slope of the linear $1/C_J^2$ vs. $V_R$ plot, one can extract which physical parameter?",
+    "answers": {
+      "a": "The transit time, $TT$.",
+      "b": "The doping concentration (e.g., $N_A$ or $N_D$).",
+      "c": "The saturation current, $IS$.",
+      "d": "The ideality factor, $N$."
     },
-    {
-      "question": "8. How can you determine the current gain (\u03b2) of a BJT from the Gummel plot?",
-      "answers": {
-        "a": "By calculating the slope of the base current (I_B) versus base-emitter voltage (V_BE) plot",
-        "b": "By calculating the slope of the collector current (I_C) versus base-emitter voltage (V_BE) plot",
-        "c": "By dividing base current (I_B) by collector current (I_C)",
-        "d": "By dividing collector current (I_C) by base current (I_B)"
-      },
-      "correctAnswer": "b",
-      "difficulty": "advanced"
+    "correctAnswer": "b",
+    "difficulty": "advanced"
+  },
+  {
+    "question": "8. Which capacitance component dominates the diode's C-V behavior under strong *forward* bias?",
+    "answers": {
+      "a": "Depletion capacitance ($C_D$)",
+      "b": "Diffusion capacitance ($C_{diff}$)",
+      "c": "Package capacitance",
+      "d": "Ohmic resistance capacitance"
     },
-    {
-      "question": "9. What does the term 'early effect' refer to in the context of BJTs?",
-      "answers": {
-        "a": "Temperature dependence of collector current",
-        "b": "Voltage dependence of base current",
-        "c": "Voltage dependence of collector current",
-        "d": "Temperature dependence of base current"
-      },
-      "correctAnswer": "c",
-      "difficulty": "advanced"
+    "correctAnswer": "b",
+    "difficulty": "beginner"
+  },
+  {
+    "question": "9. The diffusion capacitance ($C_{diff}$) is primarily modeled in SPICE using the forward current ($I_D$) and which key parameter?",
+    "answers": {
+      "a": "$TT$ (Transit Time)",
+      "b": "$CJO$ (Zero-Bias Capacitance)",
+      "c": "$M$ (Grading Coefficient)",
+      "d": "$BV$ (Breakdown Voltage)"
     },
-    {
-      "question": "10. In the Gummel plot, the linear region where the base current (I_B) is proportional to base-emitter voltage (V_BE) is known as the ______ region.",
-      "answers": {
-        "a": "Saturation",
-        "b": "Active",
-        "c": "Cut-off",
-        "d": "Breakdown"
-      },
-      "correctAnswer": "b",
-      "difficulty": "advanced"
-    }
+    "correctAnswer": "a",
+    "difficulty": "intermediate"
+  },
+  {
+    "question": "10. What is the purpose of the SPICE parameter 'FC' in the depletion capacitance model?",
+    "answers": {
+      "a": "It models the frequency dependence of the capacitance.",
+      "b": "It sets the transit time for forward bias.",
+      "c": "It limits the depletion capacitance in forward bias to avoid singularities at $V_D = VJ$.",
+      "d": "It models the capacitance in reverse breakdown."
+    },
+    "correctAnswer": "c",
+    "difficulty": "advanced"
+  }
+
   ]
 }
