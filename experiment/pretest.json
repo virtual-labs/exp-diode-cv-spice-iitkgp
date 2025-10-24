@@ -101,7 +101,7 @@
       "d": "At $V_D = VJ$"
     },
     "correctAnswer": "c",
-loc_name: "beginner"
+    "difficulty": "beginner"
   },
   {
     "question": "10. What is the most direct way to measure the parameter $CJO$?",
