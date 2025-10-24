@@ -12,16 +12,16 @@
     "correctAnswer": "b",
     "difficulty": "beginner"
   },
-  {
-    "question": "2. The SPICE equation for depletion capacitance ($C_D$) under reverse bias ($V_R$) is given by:",
-    "answers": {
-      "a": "$C_D = CJO / (1 + V_R / VJ)^M$",
-      "b": "$C_D = CJO \cdot (1 + V_R / VJ)^M$",
-      "c": "$C_D = CJO \cdot e^{V_R / (M \cdot VJ)}$",
-      "d": "$C_D = TT \cdot (I_D / V_T)$"
-    },
-    "correctAnswer": "a",
-    "difficulty": "beginner"
+{
+  "question": "2. How does the SPICE model describe the behavior of the depletion capacitance ($C_D$) as the applied reverse bias voltage ($V_R$) increases?",
+  "answers": {
+    "a": "It decreases, varying inversely with the sum of the junction potential and reverse voltage, raised to the grading coefficient (M).",
+    "b": "It increases, varying directly with the sum of the junction potential and reverse voltage, raised to the grading coefficient (M).",
+    "c": "It decreases exponentially as the reverse voltage increases.",
+    "d": "It is calculated as the transit time multiplied by the change in forward current."
+  },
+  "correctAnswer": "a",
+  "difficulty": "intermediate"
   },
   {
     "question": "3. For a linearly graded p-n junction, what value is the grading coefficient 'M' typically set to?",
@@ -98,7 +98,7 @@
       "d": "At $V_D = VJ$"
     },
     "correctAnswer": "c",
-loc_name: "beginner"
+    "difficulty": "beginner"
   },
   {
     "question": "10. What is the most direct way to measure the parameter $CJO$?",
