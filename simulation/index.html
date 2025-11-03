@@ -1,0 +1,893 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Diode C-V Parameter Extractor & Simulator</title>
+    <!-- Google Font: Inter -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700&display=swap" rel="stylesheet">
+    
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Chart.js CDN -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <!-- jsPDF (Core) -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <!-- html2canvas -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+    
+    <style>
+        /* Base styles */
+        body {
+            font-family: 'Inter', sans-serif;
+        }
+
+        /* Custom styles for better number inputs */
+        input[type="number"]::-webkit-inner-spin-button,
+        input[type="number"]::-webkit-outer-spin-button {
+            -webkit-appearance: none;
+            margin: 0;
+        }
+        input[type="number"] {
+            -moz-appearance: textfield;
+        }
+        /* Ensure charts are responsive but don't shrink too small */
+        .chart-container {
+            position: relative;
+            min-height: 400px;
+            width: 100%;
+        }
+
+        /* Styles for the hidden PDF report template */
+        #report-content {
+            width: 8.5in;
+            min-height: 11in;
+            background-color: #ffffff;
+            border: 1px solid #ccc;
+            padding: 0.5in;
+            box-sizing: border-box;
+            font-family: 'Inter', sans-serif;
+        }
+        .report-header { text-align: left; margin-bottom: 20px; }
+        .report-header h1 { font-size: 18px; font-weight: 700; margin: 0; }
+        .report-header p { font-size: 14px; margin: 4px 0; }
+        .report-date-time { margin-bottom: 30px; }
+        .report-date-time p { font-size: 12px; margin: 2px 0; color: #333; }
+        .report-main-title { text-align: center; margin-bottom: 10px; }
+        .report-main-title h2 { font-size: 24px; font-weight: 700; color: #005a9c; margin: 0; }
+        .report-section-title { font-size: 16px; font-weight: 700; color: #333; margin-top: 20px; border-bottom: 2px solid #eee; padding-bottom: 4px;}
+
+        .report-table-container {
+            max-height: 250px; /* Limit table height to prevent extreme length */
+            overflow-y: auto;
+            border: 1px solid #ddd;
+            margin-top: 10px;
+        }
+        .report-table { width: 100%; border-collapse: collapse; }
+        .report-table th, .report-table td {
+            border: 1px solid #ddd;
+            padding: 6px 8px;
+            font-size: 10px;
+            text-align: left;
+        }
+        .report-table th { background-color: #f4f4f4; font-weight: 600; }
+        .report-table td:nth-child(1) { font-family: 'Courier New', Courier, monospace; }
+        .report-table td:nth-child(2) { font-family: 'Courier New', Courier, monospace; }
+
+        .report-params { margin-top: 10px; }
+        .report-params strong { font-size: 13px; }
+        .report-params pre {
+            font-family: 'Courier New', Courier, monospace;
+            font-size: 12px;
+            background-color: #f8f8f8;
+            border: 1px solid #eee;
+            padding: 10px;
+            margin-top: 5px;
+            border-radius: 4px;
+            white-space: pre-wrap;
+        }
+        .report-chart-container {
+            border: 1px solid #ddd;
+            padding: 10px;
+            margin-top: 10px;
+            border-radius: 4px;
+        }
+        .report-footer { margin-top: 40px; font-size: 14px; }
+        .report-signatures { display: flex; justify-content: space-between; margin-bottom: 40px; }
+        .report-signature-block { width: 45%; border-top: 1px solid #000; padding-top: 8px; }
+
+    </style>
+</head>
+<body class="bg-gray-100 p-4 sm:p-8">
+
+    <div class="max-w-7xl mx-auto">
+        <h1 class="text-3xl font-bold text-gray-800 mb-6 text-center">
+            Diode C-V Parameter Extractor & Simulator
+        </h1>
+
+        <!-- View 1: Data Extraction -->
+        <div id="extractionView">
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                
+                <!-- Left Column: Data Input & Controls -->
+                <div class="bg-white p-6 rounded-lg shadow-md">
+                    <h2 class="text-xl font-semibold text-gray-700 mb-4">1. Input Data & Extraction</h2>
+                    
+                    <!-- Data Input Textarea -->
+                    <label for="dataInput" class="block text-sm font-medium text-gray-600 mb-2">
+                        Enter your V,C data (one pair per line):
+                    </label>
+                    <textarea id="dataInput" rows="12" class="w-full p-3 border border-gray-300 rounded-md font-mono text-sm focus:ring-2 focus:ring-blue-500">
+0.200000000000000,0.000000000000592
+0.100000000000000,0.000000000000540
+0.000000000000000,0.000000000000500
+-0.100000000000000,0.000000000000468
+-0.200000000000000,0.000000000000441
+-0.300000000000000,0.000000000000418
+-0.400000000000000,0.000000000000399
+-0.500000000000000,0.000000000000382
+-0.600000000000000,0.000000000000367
+-0.700000000000000,0.000000000000354
+-0.800000000000000,0.000000000000342
+-0.900000000000000,0.000000000000331
+-1.000000000000000,0.000000000000321
+</textarea>
+                    
+                    <!-- Control Buttons -->
+                    <div class="flex flex-wrap gap-3 mt-4">
+                        <button id="plotDataBtn" class="flex-1 bg-blue-600 text-white py-2 px-4 rounded-md hover:bg-blue-700 transition duration-150">
+                            Plot my Data
+                        </button>
+                        <button id="extractParamsBtn" class="flex-1 bg-green-600 text-white py-2 px-4 rounded-md hover:bg-green-700 transition duration-150">
+                            Extract Parameters
+                        </button>
+                    </div>
+                    <p class="text-xs text-gray-500 mt-2">
+                        Note: VJ and CJO are extracted from reverse-bias data (V&lt;=0) assuming an abrupt junction (M=0.5). FC is set to the SPICE default of 0.5.
+                    </p>
+
+                    <!-- Results Output -->
+                    <div id="resultsOutput" class="mt-6 space-y-3">
+                        <h3 class="text-lg font-semibold text-gray-700">Extracted Parameters:</h3>
+                        <div>
+                            <label for="resCJO" class="block text-sm font-medium text-gray-600">Zero-bias Junction Capacitance (CJO) [F]</label>
+                            <input type="text" id="resCJO" readonly class="w-full p-2 mt-1 bg-gray-100 border border-gray-300 rounded-md font-mono text-sm">
+                        </div>
+                        <div>
+                            <label for="resVJ" class="block text-sm font-medium text-gray-600">Junction Potential (VJ) [V]</label>
+                            <input type="text" id="resVJ" readonly class="w-full p-2 mt-1 bg-gray-100 border border-gray-300 rounded-md font-mono text-sm">
+                        </div>
+                        <div>
+                            <label for="resM" class="block text-sm font-medium text-gray-600">Grading Coefficient (M)</label>
+                            <input type="text" id="resM" readonly class="w-full p-2 mt-1 bg-gray-100 border border-gray-300 rounded-md font-mono text-sm">
+                        </div>
+                        <div>
+                            <label for="resFC" class="block text-sm font-medium text-gray-600">Forward-Bias Depletion Coefficient (FC)</label>
+                            <input type="text" id="resFC" readonly class="w-full p-2 mt-1 bg-gray-100 border border-gray-300 rounded-md font-mono text-sm">
+                        </div>
+                    </div>
+                    
+                    <!-- Simulation Button -->
+                    <button id="simulateBtn" class="w-full bg-purple-600 text-white py-2 px-4 rounded-md hover:bg-purple-700 transition duration-150 mt-6 font-semibold disabled:bg-gray-400" disabled>
+                        Go to Simulation &raquo;
+                    </button>
+                </div>
+
+                <!-- Right Column: Data Plot -->
+                <div class="bg-white p-6 rounded-lg shadow-md">
+                    <h2 class="text-xl font-semibold text-gray-700 mb-4">Measured C-V Curve</h2>
+                    <div class="chart-container">
+                        <canvas id="cvChart"></canvas>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+
+        <!-- View 2: Simulation -->
+        <div id="simulationView" class="hidden">
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                
+                <!-- Left Column: Simulation Controls -->
+                <div class="bg-white p-6 rounded-lg shadow-md">
+                    <h2 class="text-xl font-semibold text-gray-700 mb-4">2. Simulation Controls</h2>
+                    
+                    <button id="backToExtractBtn" class="w-full bg-gray-500 text-white py-2 px-4 rounded-md hover:bg-gray-600 transition duration-150 mb-6 font-semibold">
+                        &laquo; Back to Extractor
+                    </button>
+
+                    <div class="space-y-4">
+                        <div>
+                            <label for="simCJO" class="block text-sm font-medium text-gray-600">Zero-bias Junction Capacitance (CJO) [F]</label>
+                            <input type="number" id="simCJO" step="1e-15" class="w-full p-2 mt-1 border border-gray-300 rounded-md font-mono text-sm focus:ring-2 focus:ring-blue-500">
+                        </div>
+                        <div>
+                            <label for="simVJ" class="block text-sm font-medium text-gray-600">Junction Potential (VJ) [V]</label>
+                            <input type="number" id="simVJ" step="0.01" class="w-full p-2 mt-1 border border-gray-300 rounded-md font-mono text-sm focus:ring-2 focus:ring-blue-500">
+                        </div>
+                        <div>
+                            <label for="simM" class="block text-sm font-medium text-gray-600">Grading Coefficient (M)</label>
+                            <input type="number" id="simM" step="0.01" class="w-full p-2 mt-1 border border-gray-300 rounded-md font-mono text-sm focus:ring-2 focus:ring-blue-500">
+                        </div>
+                        <div>
+                            <label for="simFC" class="block text-sm font-medium text-gray-600">Forward-Bias Depletion Coefficient (FC)</label>
+                            <input type="number" id="simFC" step="0.01" class="w-full p-2 mt-1 border border-gray-300 rounded-md font-mono text-sm focus:ring-2 focus:ring-blue-500">
+                        </div>
+                    </div>
+                    <p class="text-xs text-gray-500 mt-4">
+                        Change any parameter to dynamically regenerate the simulation plot.
+                    </p>
+                </div>
+
+                <!-- Right Column: Simulation Plot -->
+                <div class="bg-white p-6 rounded-lg shadow-md">
+                    <h2 class="text-xl font-semibold text-gray-700 mb-4">Simulated vs. Measured C-V Curve</h2>
+                    <div class="chart-container">
+                        <canvas id="simChart"></canvas>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Action Buttons -->
+            <div class="mt-8 text-center flex flex-wrap justify-center gap-4">
+                <button id="generateReportBtn" class="bg-teal-600 text-white py-3 px-8 rounded-md hover:bg-teal-700 transition duration-150 font-semibold shadow-md disabled:bg-gray-400" disabled>
+                    Generate Report
+                </button>
+                <button id="downloadSimDataBtn" class="bg-blue-600 text-white py-3 px-8 rounded-md hover:bg-blue-700 transition duration-150 font-semibold shadow-md disabled:bg-gray-400" disabled>
+                    Download Simulated Data
+                </button>
+            </div>
+
+        </div>
+
+    </div>
+
+    <!-- 
+    ====================================================================
+    HIDDEN REPORT TEMPLATE
+    This div is styled to look like a paper report.
+    It's positioned off-screen and will be populated by JavaScript,
+    then captured with html2canvas for PDF generation.
+    ====================================================================
+    -->
+    <div id="report-container" style="position: absolute; left: -9999px; width: 8.5in;">
+        <div id="report-content">
+            <!-- Header -->
+            <div class="report-header">
+                <h1>Extraction of diode SPICE parameters related to Capacitance-Voltage (C-V)</h1>
+                <p>TCAD Lab IITKGP</p>
+            </div>
+            <div class="report-date-time">
+                <p id="report-date"></p>
+                <p id="report-time"></p>
+            </div>
+            <div class="report-main-title">
+                <h2>C-V Extraction & Simulation Results</h2>
+            </div>
+
+            <!-- Section 1: Measured Data -->
+            <h3 class="report-section-title">1. Measured Data & Extracted Parameters</h3>
+            <div class="report-table-container">
+                <table class="report-table" id="measured-data-table">
+                    <thead>
+                        <tr><th>Voltage (V)</th><th>Capacitance (F)</th></tr>
+                    </thead>
+                    <tbody id="measured-data-body">
+                        <!-- Data will be injected here by JS -->
+                    </tbody>
+                </table>
+            </div>
+            <div class="report-params">
+                <strong>Extracted Parameters:</strong>
+                <pre id="extracted-params-pre"></pre>
+            </div>
+
+            <!-- Section 2: Simulated Data -->
+            <h3 class="report-section-title">2. Simulated Data & Tuned Parameters</h3>
+            <div class="report-table-container">
+                <table class="report-table" id="simulated-data-table">
+                    <thead>
+                        <tr><th>Voltage (V)</th><th>Capacitance (F)</th></tr>
+                    </thead>
+                    <tbody id="simulated-data-body">
+                        <!-- Data will be injected here by JS -->
+                    </tbody>
+                </table>
+            </div>
+            <div class="report-params">
+                <strong>Tuned Parameters:</strong>
+                <pre id="tuned-params-pre"></pre>
+            </div>
+
+            <!-- Section 3: Chart -->
+            <h3 class="report-section-title">3. Simulated vs. Measured C-V Curve</h3>
+            <div class="report-chart-container">
+                <img id="report-chart-img" src="" alt="Simulated vs. Measured C-V Curve" style="width: 100%; height: auto;" />
+            </div>
+
+            <!-- Footer -->
+            <div class="report-footer">
+                <div class="report-signatures">
+                    <div class="report-signature-block">Signature of Student</div>
+                    <div class="report-signature-block" style="text-align: right;">Signature of Faculty</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+    <script>
+        // --- DOM Elements ---
+        const dataInput = document.getElementById('dataInput');
+        const plotDataBtn = document.getElementById('plotDataBtn');
+        const extractParamsBtn = document.getElementById('extractParamsBtn');
+        const simulateBtn = document.getElementById('simulateBtn');
+        const backToExtractBtn = document.getElementById('backToExtractBtn');
+        
+        const extractionView = document.getElementById('extractionView');
+        const simulationView = document.getElementById('simulationView');
+        
+        const resCJO = document.getElementById('resCJO');
+        const resVJ = document.getElementById('resVJ');
+        const resM = document.getElementById('resM');
+        const resFC = document.getElementById('resFC');
+        
+        const simCJO = document.getElementById('simCJO');
+        const simVJ = document.getElementById('simVJ');
+        const simM = document.getElementById('simM');
+        const simFC = document.getElementById('simFC');
+        
+        const generateReportBtn = document.getElementById('generateReportBtn');
+        const downloadSimDataBtn = document.getElementById('downloadSimDataBtn');
+        
+        const cvChartCtx = document.getElementById('cvChart').getContext('2d');
+        const simChartCtx = document.getElementById('simChart').getContext('2d');
+
+        // --- Chart Instances ---
+        let cvChartInstance = null;
+        let simChartInstance = null;
+        
+        // --- Global State ---
+        let extractedParams = { CJO: null, VJ: null, M: null, FC: null };
+
+        // --- Utility Functions ---
+
+        /**
+         * Parses the raw data from the textarea.
+         * @returns {Array<Object>} Array of {v, c} points.
+         */
+        function parseData() {
+            const text = dataInput.value.trim();
+            return text.split('\n')
+                .map(line => {
+                    const parts = line.split(',');
+                    if (parts.length === 2) {
+                        const v = parseFloat(parts[0]);
+                        const c = parseFloat(parts[1]);
+                        if (!isNaN(v) && !isNaN(c) && c > 0) { // Filter out non-positive capacitance
+                            return { v, c };
+                        }
+                    }
+                    return null;
+                })
+                .filter(p => p !== null)
+                .sort((a, b) => a.v - b.v); // Sort by voltage
+        }
+
+        /**
+         * Performs linear regression on a set of {x, y} points.
+         * @param {Array<Object>} points - Array of {x, y} objects.
+         * @returns {Object} { m: slope, c: y-intercept }
+         */
+        function linearRegression(points) {
+            const n = points.length;
+            if (n === 0) return { m: 0, c: 0 };
+            
+            let sumX = 0, sumY = 0, sumXY = 0, sumXsq = 0;
+            
+            points.forEach(p => {
+                sumX += p.x;
+                sumY += p.y;
+                sumXY += p.x * p.y;
+                sumXsq += p.x * p.x;
+            });
+
+            const denominator = (n * sumXsq - sumX * sumX);
+            if (Math.abs(denominator) < 1e-10) return { m: 0, c: 0 }; // Avoid division by zero
+
+            const m = (n * sumXY - sumX * sumY) / denominator;
+            const c = (sumY - m * sumX) / n;
+            
+            return { m, c };
+        }
+
+        /**
+         * Calculates diode capacitance based on SPICE model.
+         * @param {number} V - Applied voltage
+         * @param {number} CJO - Zero-bias junction capacitance
+         * @param {number} VJ - Junction potential
+         * @param {number} M - Grading coefficient
+         * @param {number} FC - Forward-bias depletion coefficient
+         * @returns {number} Capacitance
+         */
+        function calculateCapacitance(V, CJO, VJ, M, FC) {
+            if (VJ <= 0) VJ = 0.7; // Avoid division by zero or log(negative)
+            if (M <= 0) M = 0.5;
+            if (FC <= 0 || FC >= 1) FC = 0.5;
+
+            const V_limit = FC * VJ;
+            
+            if (V <= V_limit) {
+                // Reverse-bias region
+                // C = CJO * (1 - V/VJ)^(-M)
+                let base = 1 - V / VJ;
+                if (base <= 0) base = 1e-9; // Avoid issues if V > VJ
+                return CJO * Math.pow(base, -M);
+            } else {
+                // Forward-bias region (linear extrapolation)
+                // C(V_limit) = CJO * (1 - FC)^(-M)
+                // Derivative at V_limit: dC/dV = C(V_limit) * M / (VJ * (1 - FC))
+                // C(V) = C(V_limit) + dC/dV * (V - V_limit) ...
+                // C(V) = CJO * (1-FC)^(-M) * (1 + M*(V - V_limit) / (VJ*(1-FC)))
+                
+                // SPICE Formula:
+                // C = CJO * (1 - FC)^(-1 - M) * (1 - FC * (1 + M) + M * V / VJ)
+                
+                const F1 = Math.pow(1 - FC, -1 - M);
+                const F2 = 1 - FC * (1 + M);
+                const F3 = M * V / VJ;
+
+                return CJO * F1 * (F2 + F3);
+            }
+        }
+        
+        /**
+         * Generic function to create/update a chart.
+         */
+        function createChart(ctx, chartInstance, datasets) {
+            if (chartInstance) {
+                chartInstance.destroy();
+            }
+            
+            return new Chart(ctx, {
+                type: 'scatter',
+                data: { datasets },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    scales: {
+                        x: {
+                            type: 'linear',
+                            position: 'bottom',
+                            title: {
+                                display: true,
+                                text: 'Voltage (V)'
+                            }
+                        },
+                        y: {
+                            type: 'linear', // C-V plots are often linear
+                            title: {
+                                display: true,
+                                text: 'Capacitance (F)'
+                            },
+                            ticks: {
+                                // Format ticks to scientific notation
+                                callback: function(value, index, values) {
+                                    return value.toExponential(1);
+                                }
+                            }
+                        }
+                    },
+                    plugins: {
+                        tooltip: {
+                            callbacks: {
+                                label: function(context) {
+                                    let label = context.dataset.label || '';
+                                    if (label) {
+                                        label += ': ';
+                                    }
+                                    if (context.parsed.x !== null) {
+                                        label += `(${context.parsed.x.toFixed(3)}V, ${context.parsed.y.toExponential(2)}F)`;
+                                    }
+                                    return label;
+                                }
+                            }
+                        },
+                        legend: {
+                            display: datasets.length > 1 // Show legend only if multiple datasets
+                        }
+                    },
+                    elements: {
+                        point: {
+                            radius: 3
+                        },
+                        line: {
+                            tension: 0.1 // Slight curve for simulated data
+                        }
+                    }
+                }
+            });
+        }
+
+        // --- Core Logic Functions ---
+
+        /**
+         * Plots the user-provided data on the extraction chart.
+         */
+        function plotData() {
+            const data = parseData();
+            if (data.length === 0) {
+                return;
+            }
+            
+            const plotPoints = data.map(p => ({ x: p.v, y: p.c }));
+            
+            const datasets = [{
+                label: 'Measured Data',
+                data: plotPoints,
+                borderColor: 'rgb(29, 78, 216)',
+                backgroundColor: 'rgba(29, 78, 216, 0.5)',
+                showLine: true // Show line for C-V
+            }];
+            
+            cvChartInstance = createChart(cvChartCtx, cvChartInstance, datasets);
+        }
+
+        /**
+         * Extracts SPICE parameters from the data.
+         * Uses 1/C^2 vs V linear regression, assuming M=0.5 (abrupt junction).
+         */
+        function extractParameters() {
+            const data = parseData();
+            
+            // Filter for reverse-bias data (V <= 0)
+            const reverseBiasData = data.filter(p => p.v <= 0);
+            
+            if (reverseBiasData.length < 2) {
+                alert("Not enough reverse-bias data (V<=0) to extract parameters. Need at least 2 points.");
+                return;
+            }
+
+            // Transform data: x = V, y = 1/C^2
+            const transformedData = reverseBiasData.map(p => ({
+                x: p.v,
+                y: 1.0 / (p.c * p.c)
+            }));
+
+            // Perform linear regression: y = m*x + c
+            const { m: slope, c: intercept } = linearRegression(transformedData);
+            
+            if (intercept <= 0 || slope >= 0) {
+                alert(`Extraction failed: Invalid plot. Check data. (Slope: ${slope.toExponential(2)}, Intercept: ${intercept.toExponential(2)})`);
+                return;
+            }
+
+            // Calculate parameters
+            // c = 1 / CJO^2  =>  CJO = 1 / sqrt(c)
+            const CJO = 1.0 / Math.sqrt(intercept);
+            
+            // m = -1 / (VJ * CJO^2)  => VJ = -1 / (m * CJO^2)
+            // VJ = -1 / (m * c)
+            const VJ = -intercept / slope;
+            
+            const M = 0.5;  // Assumed for 1/C^2 method
+            const FC = 0.5; // SPICE default
+
+            // --- Store and Display Results ---
+            extractedParams.CJO = CJO;
+            extractedParams.VJ = VJ;
+            extractedParams.M = M;
+            extractedParams.FC = FC;
+            
+            resCJO.value = extractedParams.CJO.toExponential(4);
+            resVJ.value = extractedParams.VJ.toFixed(4);
+            resM.value = extractedParams.M.toFixed(4);
+            resFC.value = extractedParams.FC.toFixed(4);
+
+            // --- Enable Simulation Button ---
+            simulateBtn.disabled = false;
+        }
+
+        /**
+         * Switches to the simulation view.
+         */
+        function showSimulationView() {
+            // Ensure parameters are extracted first
+            if (extractedParams.CJO === null) {
+                extractParameters();
+                if (extractedParams.CJO === null) {
+                    alert("Please extract parameters before simulating.");
+                    return; // Stop if extraction failed
+                }
+            }
+            
+            // Populate sim inputs
+            simCJO.value = extractedParams.CJO;
+            simVJ.value = extractedParams.VJ;
+            simM.value = extractedParams.M;
+            simFC.value = extractedParams.FC;
+            
+            // Show/hide views
+            extractionView.classList.add('hidden');
+            simulationView.classList.remove('hidden');
+            
+            // Run initial simulation
+            updateSimulation();
+        }
+
+        /**
+         * Switches back to the extraction view.
+         */
+        function showExtractionView() {
+            simulationView.classList.add('hidden');
+            extractionView.classList.remove('hidden');
+        }
+
+        /**
+         * Updates the simulation plot based on sim input values.
+         */
+        function updateSimulation() {
+            const CJO_sim = parseFloat(simCJO.value);
+            const VJ_sim = parseFloat(simVJ.value);
+            const M_sim = parseFloat(simM.value);
+            const FC_sim = parseFloat(simFC.value);
+
+            if (isNaN(CJO_sim) || isNaN(VJ_sim) || isNaN(M_sim) || isNaN(FC_sim)) {
+                return; // Invalid inputs
+            }
+
+            // Generate simulated data
+            const simData = getSimulatedDataPoints();
+            
+            // Get original measured data for comparison
+            const measuredData = parseData().map(p => ({ x: p.v, y: p.c }));
+
+            const datasets = [
+                {
+                    label: 'Simulated Data',
+                    data: simData,
+                    borderColor: 'rgb(220, 38, 38)',
+                    backgroundColor: 'rgba(220, 38, 38, 0.5)',
+                    showLine: true,
+                    pointRadius: 0 // Hide points for a smooth line
+                },
+                {
+                    label: 'Measured Data',
+                    data: measuredData,
+                    borderColor: 'rgb(29, 78, 216)',
+                    backgroundColor: 'rgba(29, 78, 216, 0.5)',
+                    showLine: true
+                }
+            ];
+            
+            simChartInstance = createChart(simChartCtx, simChartInstance, datasets);
+
+            // Enable report/download buttons now that simulation is done
+            generateReportBtn.disabled = false;
+            downloadSimDataBtn.disabled = false;
+        }
+
+        /**
+         * Generates an array of simulated data points based on current sim inputs.
+         * @returns {Array<Object>} Array of {x, y} points
+         */
+        function getSimulatedDataPoints() {
+            const CJO_sim = parseFloat(simCJO.value);
+            const VJ_sim = parseFloat(simVJ.value);
+            const M_sim = parseFloat(simM.value);
+            const FC_sim = parseFloat(simFC.value);
+
+            if (isNaN(CJO_sim) || isNaN(VJ_sim) || isNaN(M_sim) || isNaN(FC_sim)) {
+                return []; // Invalid inputs
+            }
+
+            const simData = [];
+            const data = parseData();
+            if (data.length === 0) return [];
+
+            const vMin = Math.min(...data.map(p => p.v));
+            const vMax = Math.max(...data.map(p => p.v));
+            const numSteps = 100;
+            const vStep = (vMax - vMin) / numSteps;
+            
+            for (let v = vMin; v <= vMax; v += vStep) {
+                const c_calc = calculateCapacitance(v, CJO_sim, VJ_sim, M_sim, FC_sim);
+                simData.push({ x: v, y: c_calc });
+            }
+            // Ensure the last point is included
+            const c_calc_last = calculateCapacitance(vMax, CJO_sim, VJ_sim, M_sim, FC_sim);
+            simData.push({ x: vMax, y: c_calc_last });
+
+            return simData;
+        }
+
+        /**
+         * Generates and downloads a PDF report using html2canvas.
+         */
+        function generateReport() {
+            // 0. Check if data is available
+            if (!simChartInstance || !extractedParams.CJO) {
+                alert("Please extract parameters and simulate data first.");
+                return;
+            }
+
+            const btn = document.getElementById('generateReportBtn');
+            btn.textContent = 'Generating...';
+            btn.disabled = true;
+
+            try {
+                // 1. Get all data
+                const measuredData = parseData();
+                const simulatedData = getSimulatedDataPoints();
+                const chartImageData = simChartInstance.toBase64Image('image/png', 1.0);
+                const now = new Date();
+
+                // 2. Populate Header
+                document.getElementById('report-date').textContent = `Date: ${now.toLocaleDateString()}`;
+                document.getElementById('report-time').textContent = `Time: ${now.toLocaleTimeString()}`;
+
+                // 3. Populate Measured Data Table
+                const measuredTableBody = document.getElementById('measured-data-body');
+                measuredTableBody.innerHTML = ''; // Clear old data
+                measuredData.forEach(p => {
+                    const row = `<tr><td>${p.v.toFixed(10)}</td><td>${p.c.toExponential(6)}</td></tr>`;
+                    measuredTableBody.innerHTML += row;
+                });
+
+                // 4. Populate Extracted Params
+                const extractedParamsPre = document.getElementById('extracted-params-pre');
+                extractedParamsPre.textContent = 
+`Zero-bias Junction Capacitance (CJO): ${resCJO.value} F
+Junction Potential (VJ):             ${resVJ.value} V
+Grading Coefficient (M):             ${resM.value}
+Forward-Bias Depletion Coeff (FC): ${resFC.value}`;
+
+                // 5. Populate Simulated Data Table
+                const simulatedTableBody = document.getElementById('simulated-data-body');
+                simulatedTableBody.innerHTML = ''; // Clear old data
+                simulatedData.forEach(p => {
+                    const row = `<tr><td>${p.x.toFixed(4)}</td><td>${p.y.toExponential(6)}</td></tr>`;
+                    simulatedTableBody.innerHTML += row;
+                });
+
+                // 6. Populate Tuned Params
+                const tunedParamsPre = document.getElementById('tuned-params-pre');
+                tunedParamsPre.textContent = 
+`Zero-bias Junction Capacitance (CJO): ${parseFloat(simCJO.value).toExponential(4)} F
+Junction Potential (VJ):             ${parseFloat(simVJ.value).toFixed(4)} V
+Grading Coefficient (M):             ${parseFloat(simM.value).toFixed(4)}
+Forward-Bias Depletion Coeff (FC): ${parseFloat(simFC.value).toFixed(4)}`;
+
+                // 7. Add Chart Image
+                const reportChartImg = document.getElementById('report-chart-img');
+                reportChartImg.src = chartImageData;
+
+                // 8. Run html2canvas
+                const content = document.getElementById('report-content');
+                const { jsPDF } = window.jspdf;
+
+                // Use a timeout to allow the <img> tag to load the src
+                setTimeout(() => {
+                    html2canvas(content, {
+                        scale: 2, // Higher scale for better resolution
+                        useCORS: true,
+                        logging: false,
+                        windowWidth: content.scrollWidth,
+                        windowHeight: content.scrollHeight
+                    }).then(canvas => {
+                        const imgData = canvas.toDataURL('image/png');
+                        
+                        const pdf = new jsPDF('p', 'pt', 'letter');
+                        const pdfWidth = pdf.internal.pageSize.getWidth();
+                        const pdfHeight = pdf.internal.pageSize.getHeight();
+
+                        const canvasWidth = canvas.width;
+                        const canvasHeight = canvas.height;
+                        const canvasAspectRatio = canvasHeight / canvasWidth;
+
+                        let finalPdfWidth = pdfWidth;
+                        let finalPdfHeight = pdfWidth * canvasAspectRatio;
+
+                        if (finalPdfHeight > pdfHeight) {
+                            finalPdfHeight = pdfHeight;
+                            finalPdfWidth = pdfHeight / canvasAspectRatio;
+                        }
+                        
+                        const xOffset = (pdfWidth - finalPdfWidth) / 2;
+
+                        pdf.addImage(imgData, 'PNG', xOffset, 0, finalPdfWidth, finalPdfHeight, undefined, 'FAST');
+                        pdf.save('diode_cv_report.pdf');
+
+                        // Restore button
+                        btn.textContent = 'Generate Report';
+                        btn.disabled = false;
+                    }).catch(err => {
+                        console.error("Error generating PDF:", err);
+                        alert("An error occurred while generating the report. See console for details.");
+                        btn.textContent = 'Generate Report';
+                        btn.disabled = false;
+                    });
+                }, 200); // 200ms delay to ensure image is fully loaded into the template
+
+            } catch (error) {
+                console.error("Error preparing report:", error);
+                alert("An error occurred while preparing the report. See console for details.");
+                btn.textContent = 'Generate Report';
+                btn.disabled = false;
+            }
+        }
+
+        /**
+         * Generates and downloads a CSV file of the simulated data.
+         */
+        function downloadSimulatedData() {
+            // 0. Check if data is available
+            if (!simChartInstance) {
+                alert("Please simulate data first.");
+                return;
+            }
+
+            const btn = document.getElementById('downloadSimDataBtn');
+            btn.textContent = 'Downloading...';
+            btn.disabled = true;
+
+            try {
+                // 1. Get simulated data
+                const simulatedData = getSimulatedDataPoints();
+                if (simulatedData.length === 0) {
+                    alert("No simulated data to download.");
+                    return;
+                }
+
+                // 2. Create CSV content
+                let csvContent = "Voltage (V),Capacitance (F)\n";
+                simulatedData.forEach(p => {
+                    csvContent += `${p.x.toFixed(10)},${p.y.toExponential(6)}\n`;
+                });
+
+                // 3. Create Blob and trigger download
+                const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+                const link = document.createElement("a");
+                const url = URL.createObjectURL(blob);
+                link.setAttribute("href", url);
+                link.setAttribute("download", "simulated_diode_cv_data.csv");
+                link.style.visibility = 'hidden';
+                document.body.appendChild(link);
+                link.click();
+                document.body.removeChild(link);
+
+            } catch (error) {
+                console.error("Error downloading CSV:", error);
+                alert("An error occurred while downloading the data. See console for details.");
+            } finally {
+                // 4. Restore button
+                btn.textContent = 'Download Simulated Data';
+                btn.disabled = false;
+            }
+        }
+
+        // --- Event Listeners ---
+        plotDataBtn.addEventListener('click', plotData);
+        extractParamsBtn.addEventListener('click', extractParameters);
+        simulateBtn.addEventListener('click', showSimulationView);
+        backToExtractBtn.addEventListener('click', showExtractionView);
+
+        // Add listeners to sim inputs for dynamic updates
+        simCJO.addEventListener('input', updateSimulation);
+        simVJ.addEventListener('input', updateSimulation);
+        simM.addEventListener('input', updateSimulation);
+        simFC.addEventListener('input', updateSimulation);
+        
+        generateReportBtn.addEventListener('click', generateReport);
+        downloadSimDataBtn.addEventListener('click', downloadSimulatedData);
+        
+        // Plot default data on page load
+        window.onload = plotData;
+
+    </script>
+<script src="../assets/js/iframeResize.js"></script>
+        
+        </body>
+</html>
